@@ -15,6 +15,7 @@ export function App() {
   const [showInfo, setShowInfo] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [primaryColor, setPrimaryColor] = useState('#007aff');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Apply primary color to CSS custom variable
   useEffect(() => {
@@ -85,7 +86,22 @@ export function App() {
       {/* Top Floating Control Bar */}
       <header className="top-control-bar">
         <div className="brand">
-          <span className="brand-logo">✨</span>
+          <button
+            className="sidebar-toggle-btn"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            title={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+            aria-label="Toggle sidebar"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+          </button>
+          <span className="brand-logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </span>
           <span className="brand-title">Minimalist Chat UI</span>
         </div>
         <ThemeCustomizer
@@ -97,17 +113,20 @@ export function App() {
       </header>
 
       {/* Main Chat Interface Container */}
-      <div className="chat-interface-container">
-        <Sidebar
-          chats={filteredChats}
-          activeChatId={activeChatId}
-          onSelectChat={handleSelectChat}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          activeFilter={filter}
-          onFilterChange={setFilter}
-          currentUser={currentUser}
-        />
+      <div className={`chat-interface-container ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
+        {isSidebarOpen && (
+          <Sidebar
+            chats={filteredChats}
+            activeChatId={activeChatId}
+            onSelectChat={handleSelectChat}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            activeFilter={filter}
+            onFilterChange={setFilter}
+            currentUser={currentUser}
+            onCloseSidebar={() => setIsSidebarOpen(false)}
+          />
+        )}
 
         <ChatArea
           chat={activeChat}

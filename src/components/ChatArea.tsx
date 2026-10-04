@@ -37,7 +37,11 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     return (
       <main className="chat-area empty-state">
         <div className="empty-chat-placeholder">
-          <div className="placeholder-icon">💬</div>
+          <div className="placeholder-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
           <h2>Select a conversation</h2>
           <p>Choose a chat from the sidebar to start messaging in minimalist style.</p>
         </div>
@@ -52,7 +56,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         <div className="header-left">
           {onBackToSidebar && (
             <button className="back-btn" onClick={onBackToSidebar} aria-label="Back">
-              ←
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
             </button>
           )}
           <div className="avatar-wrapper">
@@ -99,7 +106,16 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                   <span className="message-time">{msg.timestamp}</span>
                   {isSentByMe && (
                     <span className="message-status">
-                      {msg.status === 'read' ? '✓✓' : '✓'}
+                      {msg.status === 'read' ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="18 6 7 17 2 12"></polyline>
+                          <polyline points="22 10 13 19 10 16"></polyline>
+                        </svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      )}
                     </span>
                   )}
                 </div>
@@ -112,12 +128,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
       {/* Message Input Box */}
       <form className="message-input-area" onSubmit={handleSend}>
-        <button type="button" className="attach-btn" title="Attach file">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
-          </svg>
-        </button>
-
         <input
           type="text"
           className="message-input"

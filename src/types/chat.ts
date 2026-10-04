@@ -15,11 +15,6 @@ export interface Message {
   text: string;
   timestamp: string;
   status: 'sent' | 'delivered' | 'read';
-  attachment?: {
-    type: 'image' | 'file';
-    url: string;
-    name?: string;
-  };
 }
 
 export interface Chat {
