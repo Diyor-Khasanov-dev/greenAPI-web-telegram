@@ -10,6 +10,7 @@ interface SidebarProps {
   activeFilter: 'all' | 'unread' | 'groups';
   onFilterChange: (filter: 'all' | 'unread' | 'groups') => void;
   currentUser: User;
+  onLogout?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -21,6 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeFilter,
   onFilterChange,
   currentUser,
+  onLogout,
 }) => {
   return (
     <aside className="sidebar">
@@ -171,6 +173,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="logout-icon-btn"
           title="Log out"
           aria-label="Log out"
+          onClick={onLogout}
         >
           <svg
             width="18"
