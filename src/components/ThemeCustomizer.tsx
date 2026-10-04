@@ -8,12 +8,12 @@ interface ThemeCustomizerProps {
 }
 
 const PRESET_COLORS = [
-  { name: 'Minimal Blue', hex: '#007aff' },
+  { name: 'Indigo Pulse', hex: '#6366f1' },
+  { name: 'Azure Blue', hex: '#007aff' },
   { name: 'Emerald', hex: '#10b981' },
   { name: 'Violet', hex: '#8b5cf6' },
-  { name: 'Rose', hex: '#f43f5e' },
-  { name: 'Amber', hex: '#f59e0b' },
-  { name: 'Graphite', hex: '#3f3f46' },
+  { name: 'Rose Red', hex: '#f43f5e' },
+  { name: 'Amber Sunset', hex: '#f59e0b' },
 ];
 
 export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({
@@ -27,25 +27,45 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({
   return (
     <div className="theme-customizer-wrapper">
       <button
-        className="theme-toggle-btn"
+        className={`icon-btn ${isOpen ? 'active' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        title="Customize Theme Accent"
-        aria-label="Customize theme"
+        title="Customize Theme Accent Color"
+        aria-label="Customize theme accent"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <circle cx="12" cy="12" r="10"></circle>
           <path d="M12 2a7 7 0 1 0 10 10"></path>
         </svg>
-        <span className="theme-btn-label">Theme Accent</span>
-        <span className="color-preview-dot" style={{ backgroundColor: primaryColor }}></span>
       </button>
 
       {isOpen && (
         <div className="theme-popover">
           <div className="theme-popover-header">
-            <h4>Appearance & Main Color</h4>
-            <button className="close-btn" onClick={() => setIsOpen(false)} aria-label="Close">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <h4>Theme Settings</h4>
+            <button
+              className="clear-search-btn"
+              onClick={() => setIsOpen(false)}
+              aria-label="Close"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
@@ -53,13 +73,23 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({
           </div>
 
           <div className="theme-section">
-            <span className="section-title">Mode</span>
-            <div className="mode-toggle-group">
+            <span className="section-title">Theme Mode</span>
+            <div className="filter-tabs" style={{ padding: 0 }}>
               <button
-                className={`mode-btn ${!isDarkMode ? 'active' : ''}`}
+                style={{ flex: 1, justifyContent: 'center' }}
+                className={`filter-tab ${!isDarkMode ? 'active' : ''}`}
                 onClick={() => isDarkMode && onToggleDarkMode()}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <circle cx="12" cy="12" r="5"></circle>
                   <line x1="12" y1="1" x2="12" y2="3"></line>
                   <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -73,10 +103,20 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({
                 <span>Light</span>
               </button>
               <button
-                className={`mode-btn ${isDarkMode ? 'active' : ''}`}
+                style={{ flex: 1, justifyContent: 'center' }}
+                className={`filter-tab ${isDarkMode ? 'active' : ''}`}
                 onClick={() => !isDarkMode && onToggleDarkMode()}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
                 <span>Dark</span>
@@ -85,12 +125,16 @@ export const ThemeCustomizer: React.FC<ThemeCustomizerProps> = ({
           </div>
 
           <div className="theme-section">
-            <span className="section-title">Main Accent Color</span>
+            <span className="section-title">Accent Color</span>
             <div className="preset-colors">
               {PRESET_COLORS.map((c) => (
                 <button
                   key={c.hex}
-                  className={`color-chip ${primaryColor.toLowerCase() === c.hex.toLowerCase() ? 'active' : ''}`}
+                  className={`color-chip ${
+                    primaryColor.toLowerCase() === c.hex.toLowerCase()
+                      ? 'active'
+                      : ''
+                  }`}
                   style={{ backgroundColor: c.hex }}
                   title={c.name}
                   onClick={() => onColorChange(c.hex)}
