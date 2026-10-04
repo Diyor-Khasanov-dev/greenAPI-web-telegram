@@ -15,7 +15,12 @@ export const ChatInfo: React.FC<ChatInfoProps> = ({ chat, onClose }) => {
     <aside className="chat-info-panel">
       <div className="info-panel-header">
         <h4>User Details</h4>
-        <button className="close-panel-btn" onClick={onClose}>✕</button>
+        <button className="close-panel-btn" onClick={onClose} aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <div className="info-profile">

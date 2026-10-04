@@ -10,6 +10,7 @@ interface SidebarProps {
   activeFilter: 'all' | 'unread' | 'groups';
   onFilterChange: (filter: 'all' | 'unread' | 'groups') => void;
   currentUser: User;
+  onCloseSidebar?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -24,20 +25,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   return (
     <aside className="sidebar">
-      {/* Sidebar Header / Profile */}
-      <div className="sidebar-header">
-        <div className="user-profile-summary">
-          <div className="avatar-wrapper">
-            <img src={currentUser.avatar} alt={currentUser.name} className="avatar" />
-            <span className={`status-dot ${currentUser.status}`} />
-          </div>
-          <div className="user-info">
-            <h3 className="user-name">{currentUser.name}</h3>
-            <span className="user-status-text">{currentUser.username}</span>
-          </div>
-        </div>
-      </div>
-
       {/* Search Input */}
       <div className="search-container">
         <div className="search-input-box">
@@ -52,7 +39,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onChange={(e) => onSearchChange(e.target.value)}
           />
           {searchQuery && (
-            <button className="clear-search-btn" onClick={() => onSearchChange('')}>✕</button>
+            <button className="clear-search-btn" onClick={() => onSearchChange('')} aria-label="Clear search">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           )}
         </div>
       </div>
@@ -115,6 +107,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
             );
           })
         )}
+      </div>
+
+      {/* Sidebar Bottom Footer: Profile & Logout */}
+      <div className="sidebar-footer">
+        <div className="user-profile-summary">
+          <div className="avatar-wrapper">
+            <img src={currentUser.avatar} alt={currentUser.name} className="avatar" />
+            <span className={`status-dot ${currentUser.status}`} />
+          </div>
+          <div className="user-info">
+            <h3 className="user-name">{currentUser.name}</h3>
+            <span className="user-status-text">{currentUser.username}</span>
+          </div>
+        </div>
+
+        <button className="logout-btn" title="Log out" aria-label="Log out">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Log Out</span>
+        </button>
       </div>
     </aside>
   );
