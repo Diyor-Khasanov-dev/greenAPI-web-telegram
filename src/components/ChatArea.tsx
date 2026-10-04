@@ -116,25 +116,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         </div>
 
         <div className="header-actions">
-          {/* Audio Call Placeholder */}
-          <button
-            className="icon-btn"
-            title="Start voice call"
-            aria-label="Start voice call"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-            </svg>
-          </button>
 
           {/* Toggle Info Panel */}
           <button
@@ -222,25 +203,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       {/* Message Input Area */}
       <form className="message-input-area" onSubmit={handleSend}>
         <div className="input-actions-left">
-          <button
-            type="button"
-            className="input-icon-btn"
-            title="Attach file"
-            aria-label="Attach file"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
-            </svg>
-          </button>
         </div>
 
         <input
@@ -252,28 +214,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         />
 
         <div className="input-actions-right">
-          <button
-            type="button"
-            className="input-icon-btn"
-            title="Insert Emoji"
-            aria-label="Insert Emoji"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-              <line x1="9" y1="9" x2="9.01" y2="9"></line>
-              <line x1="15" y1="9" x2="15.01" y2="9"></line>
-            </svg>
-          </button>
 
           <button
             type="submit"
