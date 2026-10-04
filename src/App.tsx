@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { initialChats, currentUser } from './mock/chatData';
 import type { Chat } from './types/chat';
 import { Sidebar } from './components/Sidebar';
@@ -13,7 +13,12 @@ import './App.css';
 type CurrentView = 'chat' | 'login' | 'not-found' | 'loading';
 
 export function App() {
-  const [currentView, setCurrentView] = useState<CurrentView>('chat');
+  const [currentPath, setCurrentPath] = useState<string>(() => window.location.pathname);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem('is_authenticated') === 'true';
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [chats, setChats] = useState<Chat[]>(initialChats);
   const [activeChatId, setActiveChatId] = useState<string | null>('chat-1');
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,6 +27,56 @@ export function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('#6366f1');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Helper to navigate to a new path
+  const navigateTo = useCallback((path: string, replace = false) => {
+    if (replace) {
+      window.history.replaceState(null, '', path);
+    } else {
+      window.history.pushState(null, '', path);
+    }
+    setCurrentPath(path);
+  }, []);
+
+  // Sync route on popstate (browser back/forward)
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Determine current view based on path & authentication guard
+  let currentView: CurrentView;
+
+  const cleanPath = currentPath.toLowerCase().replace(/\/$/, '') || '/';
+
+  if (isLoading) {
+    currentView = 'loading';
+  } else if (cleanPath === '/login') {
+    if (isAuthenticated) {
+      // If already authenticated, redirect to /chat
+      navigateTo('/chat', true);
+      currentView = 'chat';
+    } else {
+      currentView = 'login';
+    }
+  } else if (cleanPath === '/' || cleanPath === '/chat') {
+    if (!isAuthenticated) {
+      // Unauthenticated access redirect to /login
+      navigateTo('/login', true);
+      currentView = 'login';
+    } else {
+      if (cleanPath === '/') {
+        navigateTo('/chat', true);
+      }
+      currentView = 'chat';
+    }
+  } else {
+    currentView = 'not-found';
+  }
 
   // Apply primary color to CSS custom variable
   useEffect(() => {
@@ -100,14 +155,20 @@ export function App() {
   };
 
   const handleLoginSuccess = () => {
-    setCurrentView('loading');
+    localStorage.setItem('is_authenticated', 'true');
+    setIsAuthenticated(true);
+    setIsLoading(true);
+
     setTimeout(() => {
-      setCurrentView('chat');
+      setIsLoading(false);
+      navigateTo('/chat');
     }, 1500);
   };
 
   const handleLogout = () => {
-    setCurrentView('login');
+    localStorage.removeItem('is_authenticated');
+    setIsAuthenticated(false);
+    navigateTo('/login');
   };
 
   return (
@@ -137,7 +198,17 @@ export function App() {
               </svg>
             </button>
           )}
-          <div className="brand-badge" onClick={() => setCurrentView('chat')} style={{ cursor: 'pointer' }}>
+          <div
+            className="brand-badge"
+            onClick={() => {
+              if (isAuthenticated) {
+                navigateTo('/chat');
+              } else {
+                navigateTo('/login');
+              }
+            }}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="brand-icon">
               <svg
                 width="20"
@@ -154,34 +225,6 @@ export function App() {
             </div>
             <span className="brand-title">Chat</span>
           </div>
-        </div>
-
-        {/* View Switcher Pills for Instant Demo Navigation */}
-        <div className="view-switcher-pills">
-          <button
-            className={`view-pill ${currentView === 'chat' ? 'active' : ''}`}
-            onClick={() => setCurrentView('chat')}
-          >
-            Chat Area
-          </button>
-          <button
-            className={`view-pill ${currentView === 'login' ? 'active' : ''}`}
-            onClick={() => setCurrentView('login')}
-          >
-            Login Page
-          </button>
-          <button
-            className={`view-pill ${currentView === 'loading' ? 'active' : ''}`}
-            onClick={() => setCurrentView('loading')}
-          >
-            Premium Loading
-          </button>
-          <button
-            className={`view-pill ${currentView === 'not-found' ? 'active' : ''}`}
-            onClick={() => setCurrentView('not-found')}
-          >
-            404 Page
-          </button>
         </div>
 
         <div className="header-right-actions">
@@ -276,7 +319,7 @@ export function App() {
         {currentView === 'login' && (
           <LoginPage
             onLoginSuccess={handleLoginSuccess}
-            onNavigateToNotFound={() => setCurrentView('not-found')}
+            onNavigateToNotFound={() => navigateTo('/unknown-link')}
           />
         )}
 
@@ -290,8 +333,14 @@ export function App() {
 
         {currentView === 'not-found' && (
           <NotFoundPage
-            onGoHome={() => setCurrentView('chat')}
-            onGoToLogin={() => setCurrentView('login')}
+            onGoHome={() => {
+              if (isAuthenticated) {
+                navigateTo('/chat');
+              } else {
+                navigateTo('/login');
+              }
+            }}
+            onGoToLogin={() => navigateTo('/login')}
           />
         )}
       </main>
