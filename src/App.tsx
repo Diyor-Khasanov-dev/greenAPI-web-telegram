@@ -5,9 +5,15 @@ import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { ChatInfo } from './components/ChatInfo';
 import { ThemeCustomizer } from './components/ThemeCustomizer';
+import { LoginPage } from './components/LoginPage';
+import { NotFoundPage } from './components/NotFoundPage';
+import { PremiumLoader } from './components/PremiumLoader';
 import './App.css';
 
+type CurrentView = 'chat' | 'login' | 'not-found' | 'loading';
+
 export function App() {
+  const [currentView, setCurrentView] = useState<CurrentView>('chat');
   const [chats, setChats] = useState<Chat[]>(initialChats);
   const [activeChatId, setActiveChatId] = useState<string | null>('chat-1');
   const [searchQuery, setSearchQuery] = useState('');
@@ -93,32 +99,45 @@ export function App() {
     );
   };
 
+  const handleLoginSuccess = () => {
+    setCurrentView('loading');
+    setTimeout(() => {
+      setCurrentView('chat');
+    }, 1500);
+  };
+
+  const handleLogout = () => {
+    setCurrentView('login');
+  };
+
   return (
     <div className="app-layout">
       {/* Top Header Control Bar */}
       <header className="top-control-bar">
         <div className="brand">
-          <button
-            className="sidebar-toggle-btn"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            title={isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar'}
-            aria-label="Toggle sidebar"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {currentView === 'chat' && (
+            <button
+              className="sidebar-toggle-btn"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              title={isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar'}
+              aria-label="Toggle sidebar"
             >
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="9" y1="3" x2="9" y2="21"></line>
-            </svg>
-          </button>
-          <div className="brand-badge">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+              </svg>
+            </button>
+          )}
+          <div className="brand-badge" onClick={() => setCurrentView('chat')} style={{ cursor: 'pointer' }}>
             <div className="brand-icon">
               <svg
                 width="20"
@@ -135,6 +154,34 @@ export function App() {
             </div>
             <span className="brand-title">Chat</span>
           </div>
+        </div>
+
+        {/* View Switcher Pills for Instant Demo Navigation */}
+        <div className="view-switcher-pills">
+          <button
+            className={`view-pill ${currentView === 'chat' ? 'active' : ''}`}
+            onClick={() => setCurrentView('chat')}
+          >
+            Chat Area
+          </button>
+          <button
+            className={`view-pill ${currentView === 'login' ? 'active' : ''}`}
+            onClick={() => setCurrentView('login')}
+          >
+            Login Page
+          </button>
+          <button
+            className={`view-pill ${currentView === 'loading' ? 'active' : ''}`}
+            onClick={() => setCurrentView('loading')}
+          >
+            Premium Loading
+          </button>
+          <button
+            className={`view-pill ${currentView === 'not-found' ? 'active' : ''}`}
+            onClick={() => setCurrentView('not-found')}
+          >
+            404 Page
+          </button>
         </div>
 
         <div className="header-right-actions">
@@ -192,35 +239,62 @@ export function App() {
         </div>
       </header>
 
-      {/* Main Container */}
-      <div
-        className={`chat-interface-container ${
-          !isSidebarOpen ? 'sidebar-collapsed' : ''
-        }`}
-      >
-        <Sidebar
-          chats={filteredChats}
-          activeChatId={activeChatId}
-          onSelectChat={handleSelectChat}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          activeFilter={filter}
-          onFilterChange={setFilter}
-          currentUser={currentUser}
-        />
+      {/* Main View Container */}
+      <main className="main-content-wrapper">
+        {currentView === 'chat' && (
+          <div
+            className={`chat-interface-container ${
+              !isSidebarOpen ? 'sidebar-collapsed' : ''
+            }`}
+          >
+            <Sidebar
+              chats={filteredChats}
+              activeChatId={activeChatId}
+              onSelectChat={handleSelectChat}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              activeFilter={filter}
+              onFilterChange={setFilter}
+              currentUser={currentUser}
+              onLogout={handleLogout}
+            />
 
-        <ChatArea
-          chat={activeChat}
-          onSendMessage={handleSendMessage}
-          onToggleInfo={() => setShowInfo(!showInfo)}
-          isSidebarOpen={isSidebarOpen}
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-        />
+            <ChatArea
+              chat={activeChat}
+              onSendMessage={handleSendMessage}
+              onToggleInfo={() => setShowInfo(!showInfo)}
+              isSidebarOpen={isSidebarOpen}
+              onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+            />
 
-        {showInfo && (
-          <ChatInfo chat={activeChat} onClose={() => setShowInfo(false)} />
+            {showInfo && (
+              <ChatInfo chat={activeChat} onClose={() => setShowInfo(false)} />
+            )}
+          </div>
         )}
-      </div>
+
+        {currentView === 'login' && (
+          <LoginPage
+            onLoginSuccess={handleLoginSuccess}
+            onNavigateToNotFound={() => setCurrentView('not-found')}
+          />
+        )}
+
+        {currentView === 'loading' && (
+          <PremiumLoader
+            message="Initializing Workspace"
+            submessage="Verifying credentials & fetching encrypted chats..."
+            fullScreen={false}
+          />
+        )}
+
+        {currentView === 'not-found' && (
+          <NotFoundPage
+            onGoHome={() => setCurrentView('chat')}
+            onGoToLogin={() => setCurrentView('login')}
+          />
+        )}
+      </main>
     </div>
   );
 }
