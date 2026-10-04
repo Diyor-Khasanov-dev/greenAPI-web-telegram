@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { initialChats, currentUser } from './mock/chatData';
 import type { Chat } from './types/chat';
+import type { GreenApiCredentials } from './types/greenApi';
+import { logoutInstance, DEFAULT_API_URL } from './api/greenApi';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { ChatInfo } from './components/ChatInfo';
@@ -18,6 +20,14 @@ export function App() {
     return localStorage.getItem('is_authenticated') === 'true';
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loaderMessage, setLoaderMessage] = useState<string>('Initializing Workspace');
+  const [loaderSubmessage, setLoaderSubmessage] = useState<string>(
+    'Verifying credentials & fetching chats...'
+  );
+
+  const [idInstance, setIdInstance] = useState<string>(() => {
+    return localStorage.getItem('green_api_id_instance') || '';
+  });
 
   const [chats, setChats] = useState<Chat[]>(initialChats);
   const [activeChatId, setActiveChatId] = useState<string | null>('chat-1');
@@ -154,21 +164,51 @@ export function App() {
     );
   };
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (credentials: GreenApiCredentials) => {
     localStorage.setItem('is_authenticated', 'true');
+    setIdInstance(credentials.idInstance);
     setIsAuthenticated(true);
+    setLoaderMessage('Authenticating GREEN-API Session');
+    setLoaderSubmessage(
+      `Connecting to instance waInstance${credentials.idInstance}...`
+    );
     setIsLoading(true);
 
     setTimeout(() => {
       setIsLoading(false);
       navigateTo('/chat');
-    }, 1500);
+    }, 1200);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    setLoaderMessage('Logging Out');
+    setLoaderSubmessage('Revoking GREEN-API credentials & clearing session...');
+    setIsLoading(true);
+
+    const savedId = localStorage.getItem('green_api_id_instance');
+    const savedToken = localStorage.getItem('green_api_token_instance');
+    const savedUrl = localStorage.getItem('green_api_url') || DEFAULT_API_URL;
+
+    if (savedId && savedToken) {
+      try {
+        await logoutInstance(savedId, savedToken, savedUrl);
+      } catch {
+        // Ignore logout network errors and perform front-side logout
+      }
+    }
+
     localStorage.removeItem('is_authenticated');
+    localStorage.removeItem('green_api_id_instance');
+    localStorage.removeItem('green_api_token_instance');
+    localStorage.removeItem('green_api_url');
+
     setIsAuthenticated(false);
-    navigateTo('/login');
+    setIdInstance('');
+
+    setTimeout(() => {
+      setIsLoading(false);
+      navigateTo('/login');
+    }, 800);
   };
 
   return (
@@ -299,6 +339,7 @@ export function App() {
               activeFilter={filter}
               onFilterChange={setFilter}
               currentUser={currentUser}
+              idInstance={idInstance}
               onLogout={handleLogout}
             />
 
@@ -325,8 +366,8 @@ export function App() {
 
         {currentView === 'loading' && (
           <PremiumLoader
-            message="Initializing Workspace"
-            submessage="Verifying credentials & fetching encrypted chats..."
+            message={loaderMessage}
+            submessage={loaderSubmessage}
             fullScreen={false}
           />
         )}

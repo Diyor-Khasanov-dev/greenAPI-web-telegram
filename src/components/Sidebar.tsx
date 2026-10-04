@@ -10,6 +10,7 @@ interface SidebarProps {
   activeFilter: 'all' | 'unread' | 'groups';
   onFilterChange: (filter: 'all' | 'unread' | 'groups') => void;
   currentUser: User;
+  idInstance?: string;
   onLogout?: () => void;
 }
 
@@ -22,6 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeFilter,
   onFilterChange,
   currentUser,
+  idInstance,
   onLogout,
 }) => {
   return (
@@ -165,7 +167,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <div className="user-info">
             <h3 className="user-name">{currentUser.name}</h3>
-            <span className="user-status-text">{currentUser.username}</span>
+            <span className="user-status-text">
+              {idInstance ? `ID: ${idInstance}` : currentUser.username}
+            </span>
           </div>
         </div>
 
